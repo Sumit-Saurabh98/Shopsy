@@ -6,8 +6,7 @@ import { useUserStore } from "../stores/useUserStore";
 import { ISignUp } from "../lib/interfaces";
 
 const SignUpPage = () => {
-
-  const {signup, signUpLoading} = useUserStore();
+  const { signup, signUpLoading } = useUserStore();
   const [formData, setFormData] = useState<ISignUp>({
     name: "",
     email: "",
@@ -15,17 +14,38 @@ const SignUpPage = () => {
     confirmPassword: "",
   });
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(formData);
-    signup(formData.name, formData.email, formData.password, formData.confirmPassword);
+    
+    // Basic validation
+    if (!formData.name.trim() || !formData.email.trim() || 
+        !formData.password.trim() || !formData.confirmPassword.trim()) {
+      return;
+    }
 
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    })
+    try {
+      await signup(
+        formData.name,
+        formData.email,
+        formData.password,
+        formData.confirmPassword
+      );
+      
+      // Only clear form on successful signup
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      // Error is already handled in the store
+      console.error("Signup failed:", error);
+    }
+  };
+
+  const handleInputChange = (field: keyof ISignUp, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -65,11 +85,11 @@ const SignUpPage = () => {
                   type="text"
                   required
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm
-									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  disabled={signUpLoading}
+                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
+                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
+                    focus:border-emerald-500 sm:text-sm disabled:opacity-50"
                   placeholder="John Doe"
                 />
               </div>
@@ -91,13 +111,11 @@ const SignUpPage = () => {
                   type="email"
                   required
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className=" block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
-									rounded-md shadow-sm
-									 placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
-									 focus:border-emerald-500 sm:text-sm"
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  disabled={signUpLoading}
+                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
+                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
+                    focus:border-emerald-500 sm:text-sm disabled:opacity-50"
                   placeholder="you@example.com"
                 />
               </div>
@@ -119,11 +137,11 @@ const SignUpPage = () => {
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  className=" block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
-									rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  disabled={signUpLoading}
+                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
+                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
+                    focus:border-emerald-500 sm:text-sm disabled:opacity-50"
                   placeholder="••••••••"
                 />
               </div>
@@ -145,14 +163,11 @@ const SignUpPage = () => {
                   type="password"
                   required
                   value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  className=" block w-full px-3 py-2 pl-10 bg-gray-700 border
-									 border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  disabled={signUpLoading}
+                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 
+                    rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 
+                    focus:border-emerald-500 sm:text-sm disabled:opacity-50"
                   placeholder="••••••••"
                 />
               </div>
@@ -161,9 +176,10 @@ const SignUpPage = () => {
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent 
-							rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600
-							 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
-							  focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50"
+                rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600
+                hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2
+                focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50
+                disabled:cursor-not-allowed"
               disabled={signUpLoading}
             >
               {signUpLoading ? (
@@ -172,7 +188,7 @@ const SignUpPage = () => {
                     className="mr-2 h-5 w-5 animate-spin"
                     aria-hidden="true"
                   />
-                  Loading...
+                  Creating account...
                 </>
               ) : (
                 <>

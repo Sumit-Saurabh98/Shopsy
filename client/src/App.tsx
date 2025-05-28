@@ -19,12 +19,10 @@ import AboutPage from "./components/AboutPage";
 import ServicesPage from "./components/ServicesPage";
 import PortfolioPage from "./components/PortfolioPage";
 import OrderList from "./pages/OrderList";
-import { useOrderStore } from "./stores/useOrderStore";
 
 function App() {
 	const {checkAuth, user, checkingAuth} = useUserStore();
 	const { getCartItems } = useCartStore();
-	const {fetchCustomerOrder} = useOrderStore();
 
 	useEffect(() => {
 		checkAuth();
@@ -34,8 +32,7 @@ function App() {
 		if (!user) return;
 
 		getCartItems();
-		fetchCustomerOrder();
-	}, [getCartItems, user, fetchCustomerOrder]);
+	}, [getCartItems, user]);
 
 	if (checkingAuth) return <LoadingSpinner />;
 

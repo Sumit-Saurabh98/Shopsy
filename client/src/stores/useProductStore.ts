@@ -124,6 +124,7 @@ export const useProductStore = create<IProductStore>((set) => ({
 		set({ loading: true });
 		try {
 			const response = await axiosInstance.get("/products/featured");
+      console.log(response.data, "from product store")
 			set({ products: response.data.featuredProducts, loading: false });
 		} catch (error: unknown) {
       console.error(error);
