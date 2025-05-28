@@ -9,8 +9,7 @@
     "server": "nodemon ./dist/index.js",
     "dev": "concurrently \"npm run watch\" \"npm run server\"",
     "build": "npm i && npm i --only=dev && npm install --prefix client && tsc && npm run build --prefix client",
-    "watch": "tsc -w",
-    "seeds": "node ./dist/seeds/user.js"
+    "watch": "tsc -w"
   },
   "keywords": [
     "E-commerce"
