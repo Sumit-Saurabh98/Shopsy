@@ -6,7 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import Navbar from "./components/Navbar";
 import { useUserStore } from "./stores/useUserStore";
 import { useEffect } from "react";
-import LoadingSpinner from "./components/LoadingSpinner";
+// import LoadingSpinner from "./components/LoadingSpinner";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
@@ -21,7 +21,7 @@ import PortfolioPage from "./components/PortfolioPage";
 import OrderList from "./pages/OrderList";
 
 function App() {
-	const {checkAuth, user, checkingAuth} = useUserStore();
+	const {checkAuth, user} = useUserStore();
 	const { getCartItems } = useCartStore();
 
 	useEffect(() => {
@@ -34,7 +34,7 @@ function App() {
 		getCartItems();
 	}, [getCartItems, user]);
 
-	if (checkingAuth) return <LoadingSpinner />;
+	// if (checkingAuth) return <LoadingSpinner />;
 
   return (
 		<div className='min-h-screen bg-gray-900 text-white relative overflow-hidden'>
