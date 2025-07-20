@@ -7,8 +7,6 @@ const ProductsList = () => {
 	const [visibleCount, setVisibleCount] = useState(7);
 	const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
 
-	console.log("products in ProductsList", products);
-
 	const loadMore = () => {
 		setVisibleCount((prevCount) => prevCount + 7); // Increase visible count by 7
 	};

@@ -29,8 +29,6 @@ const PeopleAlsoBought = () => {
 		fetchRecommendations();
 	}, []);
 
-  console.log("Recommendations:", recommendations);
-
 	if (isLoading) return <LoadingSpinner />;
 
 	return (

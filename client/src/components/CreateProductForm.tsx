@@ -40,7 +40,6 @@ const CreateProductForm = () => {
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log(newProduct);
     try {
       createProduct(newProduct);
     setNewProduct({

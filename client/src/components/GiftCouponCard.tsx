@@ -14,8 +14,6 @@ const GiftCouponCard = () => {
     if (coupon) setUserInputCode(coupon.code);
   }, [coupon]);
 
-console.log(`Coupon card render`, coupon);
-
   const handleApplyCoupon = () => {
     if (!userInputCode) return;
     applyCoupon(userInputCode);

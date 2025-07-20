@@ -20,8 +20,6 @@ const HomePage = () => {
 
   const { fetchFeaturedProducts, products, loading} = useProductStore();
 
-  console.log(products, "here are the featured products")
-
   useEffect(() => {
 		fetchFeaturedProducts();
 	}, [fetchFeaturedProducts]);

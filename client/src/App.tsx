@@ -6,7 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import Navbar from "./components/Navbar";
 import { useUserStore } from "./stores/useUserStore";
 import { useEffect } from "react";
-// import LoadingSpinner from "./components/LoadingSpinner";
+import LoadingSpinner from "./components/LoadingSpinner";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
@@ -21,22 +21,28 @@ import PortfolioPage from "./components/PortfolioPage";
 import OrderList from "./pages/OrderList";
 
 function App() {
-	const {checkAuth, user} = useUserStore();
+	const { checkAuth, user, checkingAuth } = useUserStore();
 	const { getCartItems } = useCartStore();
 
 	useEffect(() => {
 		checkAuth();
-	}, [checkAuth])
+	}, [checkAuth]);
 
 	useEffect(() => {
 		if (!user) return;
-
 		getCartItems();
 	}, [getCartItems, user]);
 
-	// if (checkingAuth) return <LoadingSpinner />;
+	// Show loading spinner while checking authentication
+	if (checkingAuth) {
+		return (
+			<div className='min-h-screen bg-gray-900 flex items-center justify-center'>
+				<LoadingSpinner />
+			</div>
+		);
+	}
 
-  return (
+	return (
 		<div className='min-h-screen bg-gray-900 text-white relative overflow-hidden'>
 			{/* Background gradient */}
 			<div className='absolute inset-0 overflow-hidden'>
@@ -48,24 +54,27 @@ function App() {
 			<div className='relative z-50 pt-20'>
 				<Navbar />
 				<Routes>
-					<Route path='/' element={user ? <HomePage /> : <Navigate to='/login' />} />
-					<Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' />} />
-					<Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' />} />
-					<Route path='/admin-dashboard' element={user && user?.role === "admin" ? <AdminPage /> : <Navigate to='/login' />} />
-					<Route path='/category/:category' element={<CategoryPage/>} />
-					<Route path='/cart' element={user ? <CartPage /> : <Navigate to='/login' />} />
+					<Route path='/' element={user ? <HomePage /> : <Navigate to='/login' replace />} />
+					<Route path='/signup' element={!user ? <SignUpPage /> : <Navigate to='/' replace />} />
+					<Route path='/login' element={!user ? <LoginPage /> : <Navigate to='/' replace />} />
+					<Route path='/admin-dashboard' element={user && user?.role === "admin" ? <AdminPage /> : <Navigate to='/login' replace />} />
+					<Route path='/category/:category' element={<CategoryPage />} />
+					<Route path='/cart' element={user ? <CartPage /> : <Navigate to='/login' replace />} />
 					<Route
 						path='/purchase-success'
-						element={user ? <PurchaseSuccessPage /> : <Navigate to='/login' />}
+						element={user ? <PurchaseSuccessPage /> : <Navigate to='/login' replace />}
 					/>
-					<Route path='/purchase-cancel' element={user ? <PurchaseCancelPage /> : <Navigate to='/login' />} />
-					<Route path='/order-list' element={user ? <OrderList /> : <Navigate to='/login' />} />
+					<Route path='/purchase-cancel' element={user ? <PurchaseCancelPage /> : <Navigate to='/login' replace />} />
+					<Route path='/order-list' element={user ? <OrderList /> : <Navigate to='/login' replace />} />
 					<Route path='/contact' element={<ContactPage />} />
 					<Route path='/about' element={<AboutPage />} />
 					<Route path='/services' element={<ServicesPage />} />
 					<Route path='/portfolio' element={<PortfolioPage />} />
+					
+					{/* Catch-all route for 404 */}
+					<Route path='*' element={<Navigate to='/' replace />} />
 				</Routes>
-					<Footer/>
+				<Footer />
 			</div>
 			<Toaster />
 		</div>

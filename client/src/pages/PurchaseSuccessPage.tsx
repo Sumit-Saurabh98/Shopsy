@@ -7,27 +7,62 @@ import Confetti from "react-confetti";
 import ProcessingPaymentSpinner from "../components/ProcessingPaymentSpinner";
 import FailedPayment from "../components/FailedPayment";
 
-const PurchaseSuccessPage = () => {
-	const [isProcessing, setIsProcessing] = useState(true);
+// Define types for better type safety
+interface OrderDetails {
+    success: boolean;
+    message: string;
+    orderId: string;
+}
+
+interface ApiError {
+    response?: {
+        data?: {
+            message?: string;
+        };
+    };
+    message?: string;
+}
+
+const PurchaseSuccessPage: React.FC = () => {
+	const [isProcessing, setIsProcessing] = useState<boolean>(true);
 	const { clearCart } = useCartStore();
 	const [error, setError] = useState<string | null>(null);
+	const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
 
 	useEffect(() => {
-		const handleCheckoutSuccess = async (sessionId : string) => {
+		const handleCheckoutSuccess = async (sessionId: string): Promise<void> => {
 			try {
-				await axios.post("/payments/checkout-success", {
+				
+				const response = await axios.post<OrderDetails>("/payments/checkout-success", {
 					sessionId,
 				});
-				clearCart();
-			} catch (error) {
-				console.log(error);
-                throw new Error(String(error));
+				
+				if (response.data.success) {
+					setOrderDetails(response.data);
+					clearCart();
+				} else {
+					throw new Error(response.data.message || "Payment processing failed");
+				}
+			} catch (error: unknown) {
+				console.error("Checkout success error:", error);
+				
+				const apiError = error as ApiError;
+				
+				// More detailed error handling
+				if (apiError.response?.data?.message) {
+					setError(apiError.response.data.message);
+				} else if (apiError.message) {
+					setError(apiError.message);
+				} else {
+					setError("An unexpected error occurred during payment processing");
+				}
 			} finally {
 				setIsProcessing(false);
 			}
 		};
 
-		const sessionId = new URLSearchParams(window.location.search).get("session_id");
+		const sessionId: string | null = new URLSearchParams(window.location.search).get("session_id");
+		
 		if (sessionId) {
 			handleCheckoutSuccess(sessionId);
 		} else {
@@ -36,9 +71,12 @@ const PurchaseSuccessPage = () => {
 		}
 	}, [clearCart]);
 
-	if (isProcessing) return <ProcessingPaymentSpinner/>;
+	if (isProcessing) return <ProcessingPaymentSpinner />;
 
-	if (error) return <FailedPayment/>;
+	if (error) {
+		console.log("Rendering error page with error:", error);
+		return <FailedPayment />;
+	}
 
 	return (
 		<div className='h-screen flex items-center justify-center px-4'>
@@ -69,7 +107,9 @@ const PurchaseSuccessPage = () => {
 					<div className='bg-gray-700 rounded-lg p-4 mb-6'>
 						<div className='flex items-center justify-between mb-2'>
 							<span className='text-sm text-gray-400'>Order number</span>
-							<span className='text-sm font-semibold text-emerald-400'>#12345</span>
+							<span className='text-sm font-semibold text-emerald-400'>
+								#{orderDetails?.orderId?.toString().slice(-8) || '12345'}
+							</span>
 						</div>
 						<div className='flex items-center justify-between'>
 							<span className='text-sm text-gray-400'>Estimated delivery</span>
@@ -99,4 +139,5 @@ const PurchaseSuccessPage = () => {
 		</div>
 	);
 };
+
 export default PurchaseSuccessPage;

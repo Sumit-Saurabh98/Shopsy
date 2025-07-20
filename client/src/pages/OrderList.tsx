@@ -6,8 +6,6 @@ import { useEffect } from "react";
 const OrderList = () => {
   const { customerOrder, loadingCustomerOrder, fetchCustomerOrder } = useOrderStore();
 
-  console.log(customerOrder, "OrderList for customer orders");
-
   // Fetch orders on component mount and set up polling for real-time updates
   useEffect(() => {
     fetchCustomerOrder();

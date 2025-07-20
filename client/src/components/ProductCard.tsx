@@ -17,7 +17,6 @@ const ProductCard = ({ product }: { product: IProduct }) => {
             return;
         }else{
             addToCart(product);
-            console.log("Product added to cart:", product);
         }
 	};
 
